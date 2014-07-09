@@ -1,0 +1,4 @@
+mb_earth_ceo:
+    resource: "@MbEarthCeoBundle/Resources/config/routing.xml"
+    prefix:   /
+
