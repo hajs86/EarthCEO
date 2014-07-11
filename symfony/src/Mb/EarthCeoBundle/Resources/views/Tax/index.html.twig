@@ -1,59 +1,78 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Tax list</h1>
 
-    <table class="records_list">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>City</th>
-                <th>Country</th>
-                <th>Taxespit</th>
-                <th>Taxescit</th>
-                <th>Taxesvat</th>
-                <th>Taxesother</th>
-                <th>Population</th>
-                <th>Mayorname</th>
-                <th>Mayoremail</th>
-                <th>Updatedate</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for entity in entities %}
-            <tr>
-                <td><a href="{{ path('tax_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                <td>{{ entity.city }}</td>
-                <td>{{ entity.country }}</td>
-                <td>{{ entity.taxesPIT }}</td>
-                <td>{{ entity.taxesCIT }}</td>
-                <td>{{ entity.taxesVAT }}</td>
-                <td>{{ entity.taxesOther }}</td>
-                <td>{{ entity.population }}</td>
-                <td>{{ entity.mayorName }}</td>
-                <td>{{ entity.mayorEmail }}</td>
-                <td>{% if entity.updateDate %}{{ entity.updateDate|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>
-                <ul>
-                    <li>
-                        <a href="{{ path('tax_show', { 'id': entity.id }) }}">show</a>
-                    </li>
-                    <li>
-                        <a href="{{ path('tax_edit', { 'id': entity.id }) }}">edit</a>
-                    </li>
-                </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="container">
+        <span class="btn btn-success fileinput-button">
+            <i class="glyphicon glyphicon-plus"></i>
+            <span>Add files...</span>
+            <!-- The file input field used as target for the file upload widget -->
+            <input id="fileupload" type="file" data-url="{{ oneup_uploader_endpoint('storage') }}" name="files[]" multiple>
+        </span>
+        <br>
+        <br>
+        <!-- The global progress bar -->
+        <div id="progress" class="progress">
+            <div class="progress-bar progress-bar-success"></div>
+        </div>
+        <!-- The container for the uploaded files -->
+        <div id="files" class="files"></div>
 
-        <ul>
-        <li>
-            <a href="{{ path('tax_new') }}">
-                Create a new entry
-            </a>
-        </li>
-    </ul>
-    {% endblock %}
+        <h1>Tax list</h1>
+
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>City</th>
+                    <th>Country</th>
+                    <th>Taxespit</th>
+                    <th>Taxescit</th>
+                    <th>Taxesvat</th>
+                    <th>Taxesother</th>
+                    <th>Population</th>
+                    <th>Mayorname</th>
+                    <th>Mayoremail</th>
+                    <th>Updatedate</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td><a href="{{ path('tax_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+                    <td>{{ entity.city }}</td>
+                    <td>{{ entity.country }}</td>
+                    <td>{{ entity.taxesPIT }}</td>
+                    <td>{{ entity.taxesCIT }}</td>
+                    <td>{{ entity.taxesVAT }}</td>
+                    <td>{{ entity.taxesOther }}</td>
+                    <td>{{ entity.population }}</td>
+                    <td>{{ entity.mayorName }}</td>
+                    <td>{{ entity.mayorEmail }}</td>
+                    <td>{% if entity.updateDate %}{{ entity.updateDate|date('Y-m-d H:i:s') }}{% endif %}</td>
+                    <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('tax_show', { 'id': entity.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('tax_edit', { 'id': entity.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+            <ul>
+            <li>
+                <a href="{{ path('tax_new') }}">
+                    Create a new entry
+                </a>
+            </li>
+        </ul>
+    </div>
+
+{% endblock %}
