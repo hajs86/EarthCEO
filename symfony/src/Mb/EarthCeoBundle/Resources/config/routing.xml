@@ -4,7 +4,5 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="mb_earth_ceo_homepage" path="/hello/{name}">
-        <default key="_controller">MbEarthCeoBundle:Default:index</default>
-    </route>
+    <import resource="@MbEarthCeoBundle/Resources/config/routing/tax.xml" />
 </routes>
