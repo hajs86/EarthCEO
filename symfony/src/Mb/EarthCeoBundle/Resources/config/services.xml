@@ -11,7 +11,6 @@
 
     <services>
         <service id="mb_earth_ceo.upload_listener" class="%mb_earth_ceo.upload_listener.class%">
-            <argument type="service" id="doctrine"/>
             <tag name="kernel.event_listener" event="oneup_uploader.post_persist" method="onUpload"/>
         </service>
     </services>

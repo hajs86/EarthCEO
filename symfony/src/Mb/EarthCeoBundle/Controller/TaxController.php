@@ -2,11 +2,14 @@
 
 namespace Mb\EarthCeoBundle\Controller;
 
+use PHPExcel;
+use PHPExcel_Worksheet_Row;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Mb\EarthCeoBundle\Entity\Tax;
 use Mb\EarthCeoBundle\Form\TaxType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Tax controller.
@@ -25,10 +28,13 @@ class TaxController extends Controller
 
         $entities = $em->getRepository('MbEarthCeoBundle:Tax')->findAll();
 
-        return $this->render('MbEarthCeoBundle:Tax:index.html.twig', array(
-            'entities' => $entities,
-        ));
+        return $this->render(
+                    'MbEarthCeoBundle:Tax:index.html.twig', array(
+                                                              'entities' => $entities,
+                                                          )
+        );
     }
+
     /**
      * Creates a new Tax entity.
      *
@@ -47,10 +53,12 @@ class TaxController extends Controller
             return $this->redirect($this->generateUrl('tax_show', array('id' => $entity->getId())));
         }
 
-        return $this->render('MbEarthCeoBundle:Tax:new.html.twig', array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        ));
+        return $this->render(
+                    'MbEarthCeoBundle:Tax:new.html.twig', array(
+                                                            'entity' => $entity,
+                                                            'form'   => $form->createView(),
+                                                        )
+        );
     }
 
     /**
@@ -62,10 +70,12 @@ class TaxController extends Controller
      */
     private function createCreateForm(Tax $entity)
     {
-        $form = $this->createForm(new TaxType(), $entity, array(
-            'action' => $this->generateUrl('tax_create'),
-            'method' => 'POST',
-        ));
+        $form = $this->createForm(
+                     new TaxType(), $entity, array(
+                                      'action' => $this->generateUrl('tax_create'),
+                                      'method' => 'POST',
+                                  )
+        );
 
         $form->add('submit', 'submit', array('label' => 'Create'));
 
@@ -79,12 +89,14 @@ class TaxController extends Controller
     public function newAction()
     {
         $entity = new Tax();
-        $form   = $this->createCreateForm($entity);
+        $form = $this->createCreateForm($entity);
 
-        return $this->render('MbEarthCeoBundle:Tax:new.html.twig', array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        ));
+        return $this->render(
+                    'MbEarthCeoBundle:Tax:new.html.twig', array(
+                                                            'entity' => $entity,
+                                                            'form'   => $form->createView(),
+                                                        )
+        );
     }
 
     /**
@@ -103,10 +115,12 @@ class TaxController extends Controller
 
         $deleteForm = $this->createDeleteForm($id);
 
-        return $this->render('MbEarthCeoBundle:Tax:show.html.twig', array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        ));
+        return $this->render(
+                    'MbEarthCeoBundle:Tax:show.html.twig', array(
+                                                             'entity'      => $entity,
+                                                             'delete_form' => $deleteForm->createView(),
+                                                         )
+        );
     }
 
     /**
@@ -126,31 +140,36 @@ class TaxController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
-        return $this->render('MbEarthCeoBundle:Tax:edit.html.twig', array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
+        return $this->render(
+                    'MbEarthCeoBundle:Tax:edit.html.twig', array(
+                                                             'entity'      => $entity,
+                                                             'edit_form'   => $editForm->createView(),
+                                                             'delete_form' => $deleteForm->createView(),
+                                                         )
+        );
     }
 
     /**
-    * Creates a form to edit a Tax entity.
-    *
-    * @param Tax $entity The entity
-    *
-    * @return \Symfony\Component\Form\Form The form
-    */
+     * Creates a form to edit a Tax entity.
+     *
+     * @param Tax $entity The entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
     private function createEditForm(Tax $entity)
     {
-        $form = $this->createForm(new TaxType(), $entity, array(
-            'action' => $this->generateUrl('tax_update', array('id' => $entity->getId())),
-            'method' => 'PUT',
-        ));
+        $form = $this->createForm(
+                     new TaxType(), $entity, array(
+                                      'action' => $this->generateUrl('tax_update', array('id' => $entity->getId())),
+                                      'method' => 'PUT',
+                                  )
+        );
 
         $form->add('submit', 'submit', array('label' => 'Update'));
 
         return $form;
     }
+
     /**
      * Edits an existing Tax entity.
      *
@@ -175,12 +194,15 @@ class TaxController extends Controller
             return $this->redirect($this->generateUrl('tax_edit', array('id' => $id)));
         }
 
-        return $this->render('MbEarthCeoBundle:Tax:edit.html.twig', array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
+        return $this->render(
+                    'MbEarthCeoBundle:Tax:edit.html.twig', array(
+                                                             'entity'      => $entity,
+                                                             'edit_form'   => $editForm->createView(),
+                                                             'delete_form' => $deleteForm->createView(),
+                                                         )
+        );
     }
+
     /**
      * Deletes a Tax entity.
      *
@@ -215,10 +237,31 @@ class TaxController extends Controller
     private function createDeleteForm($id)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('tax_delete', array('id' => $id)))
-            ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
-            ->getForm()
-        ;
+                    ->setAction($this->generateUrl('tax_delete', array('id' => $id)))
+                    ->setMethod('DELETE')
+                    ->add('submit', 'submit', array('label' => 'Delete'))
+                    ->getForm();
+    }
+
+    public function fileProcessingAction(Request $request)
+    {
+        $filename = $request->query->get('filename');
+
+        /** @var PHPExcel $object */
+        $object = $this->getExcelService()->createPhpExcelObject($request->server->get('DOCUMENT_ROOT').'/uploads/storage/' . $filename);
+
+
+
+
+
+        return new Response(json_encode(['filename' => $filename]));
+    }
+
+    /**
+     * @return \Liuggio\ExcelBundle\Factory
+     */
+    private function getExcelService()
+    {
+        return $this->get('phpexcel');
     }
 }

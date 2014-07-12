@@ -12,11 +12,6 @@ use Oneup\UploaderBundle\Event\PostPersistEvent;
 
 class UploadListener
 {
-    public function __construct($doctrine)
-    {
-        $this->doctrine = $doctrine;
-    }
-
     public function onUpload(PostPersistEvent $event)
     {
         /** @var \Symfony\Component\HttpFoundation\File\File $file */
@@ -25,10 +20,7 @@ class UploadListener
 
         $response['files'] = [
             'name'       => $file->getFilename(),
-            'size'       => $file->getSize(),
-            'url'        => $file->getPath() . '/' . $file->getFileInfo(),
-            'deleteUrl'  => 'deleteUrl',
-            'deleteType' => 'DELETE'
+            'size'       => $file->getSize()
         ];
     }
 }
