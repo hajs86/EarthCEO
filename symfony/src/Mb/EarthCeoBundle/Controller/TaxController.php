@@ -2,6 +2,7 @@
 
 namespace Mb\EarthCeoBundle\Controller;
 
+use Mb\EarthCeoBundle\Factory\TaxFactory;
 use PHPExcel;
 use PHPExcel_Worksheet_Row;
 use Symfony\Component\HttpFoundation\Request;
@@ -251,10 +252,9 @@ class TaxController extends Controller
         $object = $this->getExcelService()->createPhpExcelObject($request->server->get('DOCUMENT_ROOT').'/uploads/storage/' . $filename);
 
 
+        $taxCollection = new TaxFactory($object);
 
-
-
-        return new Response(json_encode(['filename' => $filename]));
+        var_dump($taxCollection->getTaxCollection());exit;
     }
 
     /**

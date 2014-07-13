@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Mb\EarthCeoBundle\Entity\TaxRepository")
  */
-class Tax
+class Tax extends Sheet
 {
     /**
      * @var integer
@@ -100,6 +100,18 @@ class Tax
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param $id
+     *
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
