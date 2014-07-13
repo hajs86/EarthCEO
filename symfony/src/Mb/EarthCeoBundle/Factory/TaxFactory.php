@@ -9,24 +9,25 @@
 namespace Mb\EarthCeoBundle\Factory;
 
 use Mb\EarthCeoBundle\Entity\Tax;
+use Mb\EarthCeoBundle\Entity\TaxCollection;
 use PHPExcel;
 use PHPExcel_Cell;
 use PHPExcel_Worksheet_Row;
 use PHPExcel_Worksheet_RowIterator;
 use Symfony\Component\DependencyInjection\Container;
 
-class TaxFactory
+class TaxCollectionFactory
 {
     /** @var PHPExcel */
     private $phpExcelObject;
 
-    /** @var PHPExcel_Worksheet_RowIterator  */
+    /** @var PHPExcel_Worksheet_RowIterator */
     private $rowIterator;
 
     /** @var  array */
     private $fields = [];
 
-    /** @var  \Mb\EarthCeoBundle\Entity\Tax[] */
+    /** @var  \Mb\EarthCeoBundle\Entity\TaxCollection */
     private $taxCollection;
 
     /**
@@ -36,17 +37,17 @@ class TaxFactory
     {
         $this->phpExcelObject = $phpExcelObject;
         $this->rowIterator = $phpExcelObject->getActiveSheet()->getRowIterator();
+        $this->taxCollection = new TaxCollection();
 
         $this->setFieldNames();
 
         /** @var PHPExcel_worksheet_row $row */
-        foreach($this->rowIterator as $row) {
+        foreach ($this->rowIterator as $row) {
             //skip first row with field names
-            if($row->getRowIndex() === 1) continue;
+            if ($row->getRowIndex() === 1) continue;
 
-            $this->taxCollection[] = $this->createTaxFromRow($row);
+            $this->taxCollection->offsetSet($row->getRowIndex(), $this->createTaxFromRow($row));
         }
-
     }
 
     private function setFieldNames()
@@ -66,7 +67,7 @@ class TaxFactory
     {
         $tax = [];
 
-        foreach($this->getValues($row) as $key => $value) {
+        foreach ($this->getValues($row) as $key => $value) {
             $tax[$this->fields[$key]] = $value;
         }
 
@@ -81,7 +82,7 @@ class TaxFactory
     private function getValues(PHPExcel_worksheet_row $taxValues)
     {
         /** @var PHPExcel_cell $cell */
-        foreach($taxValues->getCellIterator() as $key => $cell) {
+        foreach ($taxValues->getCellIterator() as $key => $cell) {
             yield $key => $cell->getValue();
         }
     }

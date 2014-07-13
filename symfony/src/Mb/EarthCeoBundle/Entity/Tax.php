@@ -3,6 +3,7 @@
 namespace Mb\EarthCeoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Tax
@@ -17,7 +18,7 @@ class Tax extends Sheet
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @Assert\Type(type="integer", message="The value {{ value }} is not a valid {{ type }}.")
      */
     private $id;
 
@@ -25,6 +26,7 @@ class Tax extends Sheet
      * @var string
      *
      * @ORM\Column(name="city", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $city;
 
@@ -32,6 +34,7 @@ class Tax extends Sheet
      * @var string
      *
      * @ORM\Column(name="country", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $country;
 
@@ -39,6 +42,8 @@ class Tax extends Sheet
      * @var float
      *
      * @ORM\Column(name="taxesPIT", type="float")
+     * @Assert\NotBlank()
+     * @Assert\Currency
      */
     private $taxesPIT;
 
@@ -46,6 +51,8 @@ class Tax extends Sheet
      * @var float
      *
      * @ORM\Column(name="taxesCIT", type="float")
+     * @Assert\NotBlank()
+     * @Assert\Currency
      */
     private $taxesCIT;
 
@@ -53,6 +60,8 @@ class Tax extends Sheet
      * @var float
      *
      * @ORM\Column(name="taxesVAT", type="float")
+     * @Assert\NotBlank()
+     * @Assert\Currency
      */
     private $taxesVAT;
 
@@ -60,6 +69,8 @@ class Tax extends Sheet
      * @var float
      *
      * @ORM\Column(name="taxesOther", type="float")
+     * @Assert\NotBlank()
+     * @Assert\Currency
      */
     private $taxesOther;
 
@@ -67,6 +78,8 @@ class Tax extends Sheet
      * @var integer
      *
      * @ORM\Column(name="population", type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Type(type="integer", message="The value {{ value }} is not a valid {{ type }}.")
      */
     private $population;
 
@@ -74,6 +87,7 @@ class Tax extends Sheet
      * @var string
      *
      * @ORM\Column(name="mayorName", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $mayorName;
 
@@ -81,6 +95,8 @@ class Tax extends Sheet
      * @var string
      *
      * @ORM\Column(name="mayorEmail", type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $mayorEmail;
 
@@ -88,6 +104,8 @@ class Tax extends Sheet
      * @var \DateTime
      *
      * @ORM\Column(name="updateDate", type="datetime")
+     * @Assert\NotBlank()
+     * @Assert\Date()
      */
     private $updateDate;
 
@@ -122,7 +140,7 @@ class Tax extends Sheet
      */
     public function setCity($city)
     {
-        $this->city = $city;
+        $this->city = utf8_encode($city);
 
         return $this;
     }
@@ -145,7 +163,7 @@ class Tax extends Sheet
      */
     public function setCountry($country)
     {
-        $this->country = $country;
+        $this->country = utf8_encode($country);
 
         return $this;
     }
@@ -168,7 +186,7 @@ class Tax extends Sheet
      */
     public function setTaxesPIT($taxesPIT)
     {
-        $this->taxesPIT = $taxesPIT;
+        $this->taxesPIT = number_format(floatval($taxesPIT), 2, ',', ' ');
 
         return $this;
     }
@@ -191,7 +209,7 @@ class Tax extends Sheet
      */
     public function setTaxesCIT($taxesCIT)
     {
-        $this->taxesCIT = $taxesCIT;
+        $this->taxesCIT = number_format(floatval($taxesCIT), 2, ',', ' ');
 
         return $this;
     }
@@ -214,7 +232,7 @@ class Tax extends Sheet
      */
     public function setTaxesVAT($taxesVAT)
     {
-        $this->taxesVAT = $taxesVAT;
+        $this->taxesVAT = number_format(floatval($taxesVAT), 2, ',', ' ');
 
         return $this;
     }
@@ -237,7 +255,7 @@ class Tax extends Sheet
      */
     public function setTaxesOther($taxesOther)
     {
-        $this->taxesOther = $taxesOther;
+        $this->taxesOther = number_format(floatval($taxesOther), 2, ',', ' ');
 
         return $this;
     }
@@ -260,7 +278,7 @@ class Tax extends Sheet
      */
     public function setPopulation($population)
     {
-        $this->population = $population;
+        $this->population = (int)$population;
 
         return $this;
     }
@@ -283,7 +301,7 @@ class Tax extends Sheet
      */
     public function setMayorName($mayorName)
     {
-        $this->mayorName = $mayorName;
+        $this->mayorName = utf8_encode($mayorName);
 
         return $this;
     }
@@ -306,7 +324,7 @@ class Tax extends Sheet
      */
     public function setMayorEmail($mayorEmail)
     {
-        $this->mayorEmail = $mayorEmail;
+        $this->mayorEmail = utf8_encode($mayorEmail);
 
         return $this;
     }
@@ -329,7 +347,7 @@ class Tax extends Sheet
      */
     public function setUpdateDate($updateDate)
     {
-        $this->updateDate = $updateDate;
+        $this->updateDate = date('d F Y', $updateDate);
 
         return $this;
     }
