@@ -11,8 +11,9 @@ namespace Mb\EarthCeoBundle\Entity;
 use ArrayAccess;
 use InvalidArgumentException;
 use Iterator;
+use IteratorAggregate;
 
-class TaxCollection implements Iterator, ArrayAccess
+class TaxCollection implements IteratorAggregate, ArrayAccess
 {
 
     /** @var  integer */
@@ -25,56 +26,6 @@ class TaxCollection implements Iterator, ArrayAccess
     {
         $this->offset = 0;
         $this->data = [];
-    }
-
-    /**
-     * @return \Mb\EarthCeoBundle\Entity\Tax
-     */
-    public function current()
-    {
-        return $this->data[$this->offset];
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Move forward to next element
-     * @link http://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
-     */
-    public function next()
-    {
-        ++$this->offset;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Return the key of the current element
-     * @link http://php.net/manual/en/iterator.key.php
-     * @return mixed scalar on success, or null on failure.
-     */
-    public function key()
-    {
-        return $this->offset;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Checks if current position is valid
-     * @link http://php.net/manual/en/iterator.valid.php
-     * @return boolean The return value will be casted to boolean and then evaluated.
-     * Returns true on success or false on failure.
-     */
-    public function valid()
-    {
-        return isset($this->data[$this->offset]);
-    }
-
-    /**
-     * rewinds collection to start
-     */
-    public function rewind()
-    {
-        $this->offset = 0;
     }
 
     /**
@@ -105,7 +56,7 @@ class TaxCollection implements Iterator, ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if ($value instanceof Tax::class) {
+        if ($value instanceof Tax) {
             $this->data[$offset] = $value;
         } else {
             throw new InvalidArgumentException('Value must be instance of %s, %s given', Tax::class, gettype($value));
@@ -127,5 +78,15 @@ class TaxCollection implements Iterator, ArrayAccess
     public function offsetUnset($offset)
     {
         unset($this->data[$offset]);
+    }
+
+    /**
+     * @return \Generator|\Traversable
+     */
+    public function getIterator()
+    {
+        foreach ($this->data as $tax) {
+            yield $tax;
+        }
     }
 }

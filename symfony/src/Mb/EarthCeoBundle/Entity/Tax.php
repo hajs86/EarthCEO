@@ -2,8 +2,10 @@
 
 namespace Mb\EarthCeoBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Mb\EarthCeoBundle\Validator\Constraints as myAssert;
 
 /**
  * Tax
@@ -13,107 +15,126 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Tax extends Sheet
 {
+    const DATE_FORMAT = 'd-m-Y';
+
+    /**
+     * @var integer
+     * @ORM\Id
+     * @ORM\Column(name="internalId", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $internalId;
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @Assert\Type(type="integer", message="The value {{ value }} is not a valid {{ type }}.")
+     * @ORM\Column(name="id", nullable=true)
+     * @Assert\NotBlank()
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="city", type="string", length=255)
+     * @ORM\Column(name="city", type="string", length=255, nullable=true)
      * @Assert\NotBlank()
+     * @myAssert\Name()
      */
     private $city;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="country", type="string", length=255)
+     * @ORM\Column(name="country", type="string", length=255, nullable=true)
      * @Assert\NotBlank()
+     * @myAssert\Name()
      */
     private $country;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="taxesPIT", type="float")
+     * @ORM\Column(name="taxesPIT", type="float", nullable=true)
      * @Assert\NotBlank()
-     * @Assert\Currency
+     * @Assert\Type(type="float")
      */
     private $taxesPIT;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="taxesCIT", type="float")
+     * @ORM\Column(name="taxesCIT", type="float", nullable=true)
      * @Assert\NotBlank()
-     * @Assert\Currency
+     * @Assert\Type(type="float")
      */
     private $taxesCIT;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="taxesVAT", type="float")
+     * @ORM\Column(name="taxesVAT", type="float", nullable=true)
      * @Assert\NotBlank()
-     * @Assert\Currency
+     * @Assert\Type(type="float")
      */
     private $taxesVAT;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="taxesOther", type="float")
+     * @ORM\Column(name="taxesOther", type="float", nullable=true)
      * @Assert\NotBlank()
-     * @Assert\Currency
+     * @Assert\Type(type="float")
      */
     private $taxesOther;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="population", type="integer")
+     * @ORM\Column(name="population", type="integer", nullable=true)
      * @Assert\NotBlank()
-     * @Assert\Type(type="integer", message="The value {{ value }} is not a valid {{ type }}.")
+     * @Assert\Type(type="integer")
      */
     private $population;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mayorName", type="string", length=255)
+     * @ORM\Column(name="mayorName", type="string", length=255, nullable=true)
      * @Assert\NotBlank()
+     * @myAssert\Name()
      */
     private $mayorName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mayorEmail", type="string", length=255)
+     * @ORM\Column(name="mayorEmail", type="string", length=255, nullable=true)
      * @Assert\NotBlank()
      * @Assert\Email()
      */
     private $mayorEmail;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
-     * @ORM\Column(name="updateDate", type="datetime")
+     * @ORM\Column(name="updateDate", type="date", nullable=true)
      * @Assert\NotBlank()
-     * @Assert\Date()
+     * @myAssert\DateFormat()
      */
     private $updateDate;
 
 
     /**
+     * @return int
+     */
+    public function getInternalId()
+    {
+        return $this->internalId;
+    }
+
+    /**
      * Get id
      *
-     * @return integer 
+     * @return mixed
      */
     public function getId()
     {
@@ -136,11 +157,12 @@ class Tax extends Sheet
      * Set city
      *
      * @param string $city
+     *
      * @return Tax
      */
     public function setCity($city)
     {
-        $this->city = utf8_encode($city);
+        $this->city = utf8_decode($city);
 
         return $this;
     }
@@ -148,7 +170,7 @@ class Tax extends Sheet
     /**
      * Get city
      *
-     * @return string 
+     * @return string
      */
     public function getCity()
     {
@@ -159,11 +181,12 @@ class Tax extends Sheet
      * Set country
      *
      * @param string $country
+     *
      * @return Tax
      */
     public function setCountry($country)
     {
-        $this->country = utf8_encode($country);
+        $this->country = utf8_decode($country);
 
         return $this;
     }
@@ -171,7 +194,7 @@ class Tax extends Sheet
     /**
      * Get country
      *
-     * @return string 
+     * @return string
      */
     public function getCountry()
     {
@@ -182,11 +205,12 @@ class Tax extends Sheet
      * Set taxesPIT
      *
      * @param float $taxesPIT
+     *
      * @return Tax
      */
     public function setTaxesPIT($taxesPIT)
     {
-        $this->taxesPIT = number_format(floatval($taxesPIT), 2, ',', ' ');
+        $this->taxesPIT = $this->toFloat($taxesPIT);
 
         return $this;
     }
@@ -194,22 +218,23 @@ class Tax extends Sheet
     /**
      * Get taxesPIT
      *
-     * @return float 
+     * @return float
      */
     public function getTaxesPIT()
     {
-        return $this->taxesPIT;
+        return $this->toNumberFormat($this->taxesPIT);
     }
 
     /**
      * Set taxesCIT
      *
      * @param float $taxesCIT
+     *
      * @return Tax
      */
     public function setTaxesCIT($taxesCIT)
     {
-        $this->taxesCIT = number_format(floatval($taxesCIT), 2, ',', ' ');
+        $this->taxesCIT = $this->toFloat($taxesCIT);
 
         return $this;
     }
@@ -217,22 +242,23 @@ class Tax extends Sheet
     /**
      * Get taxesCIT
      *
-     * @return float 
+     * @return float
      */
     public function getTaxesCIT()
     {
-        return $this->taxesCIT;
+        return $this->toNumberFormat($this->taxesCIT);
     }
 
     /**
      * Set taxesVAT
      *
      * @param float $taxesVAT
+     *
      * @return Tax
      */
     public function setTaxesVAT($taxesVAT)
     {
-        $this->taxesVAT = number_format(floatval($taxesVAT), 2, ',', ' ');
+        $this->taxesVAT = $this->toFloat($taxesVAT);
 
         return $this;
     }
@@ -240,22 +266,23 @@ class Tax extends Sheet
     /**
      * Get taxesVAT
      *
-     * @return float 
+     * @return float
      */
     public function getTaxesVAT()
     {
-        return $this->taxesVAT;
+        return $this->toNumberFormat($this->taxesVAT);
     }
 
     /**
      * Set taxesOther
      *
      * @param float $taxesOther
+     *
      * @return Tax
      */
     public function setTaxesOther($taxesOther)
     {
-        $this->taxesOther = number_format(floatval($taxesOther), 2, ',', ' ');
+        $this->taxesOther = $this->toFloat($taxesOther);
 
         return $this;
     }
@@ -263,22 +290,24 @@ class Tax extends Sheet
     /**
      * Get taxesOther
      *
-     * @return float 
+     * @return float
      */
     public function getTaxesOther()
     {
-        return $this->taxesOther;
+        return $this->toNumberFormat($this->taxesOther);
     }
 
     /**
      * Set population
      *
      * @param integer $population
+     *
      * @return Tax
      */
     public function setPopulation($population)
     {
-        $this->population = (int)$population;
+        $population = intval(utf8_decode($population));
+        $this->population = is_numeric($population) ? $population : null;
 
         return $this;
     }
@@ -286,7 +315,7 @@ class Tax extends Sheet
     /**
      * Get population
      *
-     * @return integer 
+     * @return integer
      */
     public function getPopulation()
     {
@@ -297,11 +326,12 @@ class Tax extends Sheet
      * Set mayorName
      *
      * @param string $mayorName
+     *
      * @return Tax
      */
     public function setMayorName($mayorName)
     {
-        $this->mayorName = utf8_encode($mayorName);
+        $this->mayorName = utf8_decode($mayorName);
 
         return $this;
     }
@@ -309,7 +339,7 @@ class Tax extends Sheet
     /**
      * Get mayorName
      *
-     * @return string 
+     * @return string
      */
     public function getMayorName()
     {
@@ -320,11 +350,12 @@ class Tax extends Sheet
      * Set mayorEmail
      *
      * @param string $mayorEmail
+     *
      * @return Tax
      */
     public function setMayorEmail($mayorEmail)
     {
-        $this->mayorEmail = utf8_encode($mayorEmail);
+        $this->mayorEmail = utf8_decode($mayorEmail);
 
         return $this;
     }
@@ -332,7 +363,7 @@ class Tax extends Sheet
     /**
      * Get mayorEmail
      *
-     * @return string 
+     * @return string
      */
     public function getMayorEmail()
     {
@@ -342,12 +373,14 @@ class Tax extends Sheet
     /**
      * Set updateDate
      *
-     * @param \DateTime $updateDate
+     * @param DateTime $updateDate
+     *
      * @return Tax
      */
     public function setUpdateDate($updateDate)
     {
-        $this->updateDate = date('d F Y', $updateDate);
+        $date = date(static::DATE_FORMAT, strtotime(str_replace('/', '-', $updateDate)));
+        $this->updateDate = DateTime::createFromFormat(static::DATE_FORMAT, $date);
 
         return $this;
     }
@@ -355,10 +388,50 @@ class Tax extends Sheet
     /**
      * Get updateDate
      *
-     * @return \DateTime 
+     * @return DateTime
      */
     public function getUpdateDate()
     {
+
         return $this->updateDate;
     }
+
+    /**
+     * @param $value
+     *
+     * @return null|string
+     */
+    private function toNumberFormat($value)
+    {
+        if (is_numeric($value)) {
+
+            return number_format($value, 2, ',', ' ');
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $num
+     *
+     * @return float
+     */
+    private function toFloat($num)
+    {
+        $dotPos = strrpos($num, '.');
+        $commaPos = strrpos($num, ',');
+        $sep = (($dotPos > $commaPos) && $dotPos) ? $dotPos :
+            ((($commaPos > $dotPos) && $commaPos) ? $commaPos : false);
+
+        if (!$sep) {
+            return floatval(preg_replace("/[^0-9]/", "", $num));
+        }
+
+        return floatval(
+            preg_replace("/[^0-9]/", "", substr($num, 0, $sep)) . '.' .
+            preg_replace("/[^0-9]/", "", substr($num, $sep + 1, strlen($num)))
+        );
+    }
+
+
 }

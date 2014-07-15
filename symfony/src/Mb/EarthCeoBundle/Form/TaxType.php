@@ -15,6 +15,7 @@ class TaxType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('id')
             ->add('city')
             ->add('country')
             ->add('taxesPIT')
@@ -34,7 +35,8 @@ class TaxType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Mb\EarthCeoBundle\Entity\Tax'
+            'data_class' => 'Mb\EarthCeoBundle\Entity\Tax',
+            'csrf_protection' => false,
         ));
     }
 

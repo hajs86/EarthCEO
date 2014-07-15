@@ -40,14 +40,7 @@ class TaxCollectionFactory
         $this->taxCollection = new TaxCollection();
 
         $this->setFieldNames();
-
-        /** @var PHPExcel_worksheet_row $row */
-        foreach ($this->rowIterator as $row) {
-            //skip first row with field names
-            if ($row->getRowIndex() === 1) continue;
-
-            $this->taxCollection->offsetSet($row->getRowIndex(), $this->createTaxFromRow($row));
-        }
+        $this->createCollectionFromSheet();
     }
 
     private function setFieldNames()
@@ -63,7 +56,12 @@ class TaxCollectionFactory
         $this->rowIterator->next();
     }
 
-    public function createTaxFromRow(PHPExcel_worksheet_row $row)
+    /**
+     * @param PHPExcel_Worksheet_Row $row
+     *
+     * @return static
+     */
+    private function createTaxFromRow(PHPExcel_worksheet_row $row)
     {
         $tax = [];
 
@@ -87,9 +85,26 @@ class TaxCollectionFactory
         }
     }
 
+    /**
+     * @return TaxCollection
+     */
     public function getTaxCollection()
     {
         return $this->taxCollection;
+    }
+
+    /**
+     * @return void
+     */
+    private function createCollectionFromSheet()
+    {
+        /** @var PHPExcel_worksheet_row $row */
+        foreach ($this->rowIterator as $row) {
+            //skip first row with field names
+            if ($row->getRowIndex() === 1) continue;
+
+            $this->taxCollection->offsetSet($row->getRowIndex(), $this->createTaxFromRow($row));
+        }
     }
 
 } 

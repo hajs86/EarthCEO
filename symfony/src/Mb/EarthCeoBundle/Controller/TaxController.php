@@ -2,15 +2,18 @@
 
 namespace Mb\EarthCeoBundle\Controller;
 
-use Mb\EarthCeoBundle\Factory\TaxFactory;
+use Mb\EarthCeoBundle\Entity\Sheet;
+use Mb\EarthCeoBundle\Entity\TaxCollection;
+use Mb\EarthCeoBundle\Factory\TaxCollectionFactory;
+use Mb\EarthCeoBundle\Validator\TaxCollectionValidator;
 use PHPExcel;
-use PHPExcel_Worksheet_Row;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Mb\EarthCeoBundle\Entity\Tax;
 use Mb\EarthCeoBundle\Form\TaxType;
 use Symfony\Component\HttpFoundation\Response;
+
 
 /**
  * Tax controller.
@@ -249,13 +252,22 @@ class TaxController extends Controller
         $filename = $request->query->get('filename');
 
         /** @var PHPExcel $object */
-        $object = $this->getExcelService()->createPhpExcelObject($request->server->get('DOCUMENT_ROOT').'/uploads/storage/' . $filename);
+        $sheet = $this->getExcelService()->createPhpExcelObject($request->server->get('DOCUMENT_ROOT') . '/uploads/storage/' . $filename);
 
+        $taxCollectionFactory = new TaxCollectionFactory($sheet);
 
-        $taxCollection = new TaxFactory($object);
+        $this->getTaxCollectionValidator()->validateAndUpdateCollection($taxCollectionFactory->getTaxCollection());
 
-        var_dump($taxCollection->getTaxCollection());exit;
+        $em = $this->getDoctrine()->getManager();
+
+        foreach ($taxCollectionFactory->getTaxCollection()->getIterator() as $tax) {
+            $em->persist($tax);
+            $em->flush();
+        }
+
+        return new Response(json_encode(['result' => 'success']));
     }
+
 
     /**
      * @return \Liuggio\ExcelBundle\Factory
@@ -263,5 +275,13 @@ class TaxController extends Controller
     private function getExcelService()
     {
         return $this->get('phpexcel');
+    }
+
+    /**
+     * @return TaxCollectionValidator
+     */
+    private function getTaxCollectionValidator()
+    {
+        return $this->get('mb_earth_ceo.tax_collection_validator');
     }
 }
