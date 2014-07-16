@@ -86,7 +86,6 @@
                 $('#progress .progress-bar').css('width', progress + '%');
             }).on('fileuploaddone', function (e, data) {
                 var file = data.result.files;
-console.log(file.name);
                         $.ajax({
                             type: 'GET',
                             url: '{{ path('tax_processing') }}',

@@ -4,40 +4,15 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="tax" path="/">
+    <route id="tax" path="/orderBy/{orderBy}">
         <default key="_controller">MbEarthCeoBundle:Tax:index</default>
+        <default key="orderBy">id</default>
     </route>
 
-    <route id="tax_show" path="/{id}/show">
-        <default key="_controller">MbEarthCeoBundle:Tax:show</default>
-    </route>
-
-    <route id="tax_new" path="/new">
-        <default key="_controller">MbEarthCeoBundle:Tax:new</default>
-    </route>
-
-    <route id="tax_create" path="/create">
-        <default key="_controller">MbEarthCeoBundle:Tax:create</default>
-        <requirement key="_method">post</requirement>
-    </route>
-
-    <route id="tax_edit" path="/{id}/edit">
-        <default key="_controller">MbEarthCeoBundle:Tax:edit</default>
-    </route>
-
-    <route id="tax_update" path="/{id}/update">
-        <default key="_controller">MbEarthCeoBundle:Tax:update</default>
-        <requirement key="_method">post|put</requirement>
-    </route>
-
-    <route id="tax_delete" path="/{id}/delete">
-        <default key="_controller">MbEarthCeoBundle:Tax:delete</default>
-        <requirement key="_method">post|delete</requirement>
-    </route>
-
-    <route id="tax_processing" path="/processing">
+    <route id="tax_processing" path="/processing/{fileName}">
         <default key="_controller">MbEarthCeoBundle:Tax:fileProcessing</default>
         <requirement key="_method">get</requirement>
+        <default key="fileName">null</default>
     </route>
 
 </routes>

@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Mb\EarthCeoBundle\Validator\Constraints as myAssert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Tax
@@ -29,6 +30,7 @@ class Tax extends Sheet
      *
      * @ORM\Column(name="id", nullable=true)
      * @Assert\NotBlank()
+     * @Gedmo\SortableGroup
      */
     private $id;
 
@@ -38,6 +40,7 @@ class Tax extends Sheet
      * @ORM\Column(name="city", type="string", length=255, nullable=true)
      * @Assert\NotBlank()
      * @myAssert\Name()
+     * @Gedmo\SortableGroup
      */
     private $city;
 
@@ -47,6 +50,7 @@ class Tax extends Sheet
      * @ORM\Column(name="country", type="string", length=255, nullable=true)
      * @Assert\NotBlank()
      * @myAssert\Name()
+     * @Gedmo\SortableGroup
      */
     private $country;
 
@@ -56,6 +60,7 @@ class Tax extends Sheet
      * @ORM\Column(name="taxesPIT", type="float", nullable=true)
      * @Assert\NotBlank()
      * @Assert\Type(type="float")
+     * @Gedmo\SortableGroup
      */
     private $taxesPIT;
 
@@ -65,6 +70,7 @@ class Tax extends Sheet
      * @ORM\Column(name="taxesCIT", type="float", nullable=true)
      * @Assert\NotBlank()
      * @Assert\Type(type="float")
+     * @Gedmo\SortableGroup
      */
     private $taxesCIT;
 
@@ -74,6 +80,7 @@ class Tax extends Sheet
      * @ORM\Column(name="taxesVAT", type="float", nullable=true)
      * @Assert\NotBlank()
      * @Assert\Type(type="float")
+     * @Gedmo\SortableGroup
      */
     private $taxesVAT;
 
@@ -83,6 +90,7 @@ class Tax extends Sheet
      * @ORM\Column(name="taxesOther", type="float", nullable=true)
      * @Assert\NotBlank()
      * @Assert\Type(type="float")
+     * @Gedmo\SortableGroup
      */
     private $taxesOther;
 
@@ -92,6 +100,7 @@ class Tax extends Sheet
      * @ORM\Column(name="population", type="integer", nullable=true)
      * @Assert\NotBlank()
      * @Assert\Type(type="integer")
+     * @Gedmo\SortableGroup
      */
     private $population;
 
@@ -101,6 +110,7 @@ class Tax extends Sheet
      * @ORM\Column(name="mayorName", type="string", length=255, nullable=true)
      * @Assert\NotBlank()
      * @myAssert\Name()
+     * @Gedmo\SortableGroup
      */
     private $mayorName;
 
@@ -110,6 +120,7 @@ class Tax extends Sheet
      * @ORM\Column(name="mayorEmail", type="string", length=255, nullable=true)
      * @Assert\NotBlank()
      * @Assert\Email()
+     * @Gedmo\SortableGroup
      */
     private $mayorEmail;
 
@@ -119,8 +130,15 @@ class Tax extends Sheet
      * @ORM\Column(name="updateDate", type="date", nullable=true)
      * @Assert\NotBlank()
      * @myAssert\DateFormat()
+     * @Gedmo\SortableGroup
      */
     private $updateDate;
+
+    /**
+     * @Gedmo\SortablePosition
+     * @ORM\Column(name="position", type="integer")
+     */
+    private $position;
 
 
     /**
@@ -306,7 +324,7 @@ class Tax extends Sheet
      */
     public function setPopulation($population)
     {
-        $population = intval(utf8_decode($population));
+        $population = intval(utf8_decode(str_replace(' ', '', $population)));
         $this->population = is_numeric($population) ? $population : null;
 
         return $this;
@@ -367,7 +385,7 @@ class Tax extends Sheet
      */
     public function getMayorEmail()
     {
-        return $this->mayorEmail;
+        return $this->mayorEmail == null? 'Niepoprawny format': $this->mayorEmail;
     }
 
     /**
@@ -394,6 +412,14 @@ class Tax extends Sheet
     {
 
         return $this->updateDate;
+    }
+
+    /**
+     * @return float
+     */
+    public function getIncomeForPerson()
+    {
+        return array_sum([$this->taxesCIT, $this->taxesOther, $this->taxesPIT, $this->taxesVAT]) / $this->population;
     }
 
     /**

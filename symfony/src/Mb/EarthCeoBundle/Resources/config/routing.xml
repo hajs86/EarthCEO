@@ -5,4 +5,8 @@
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
     <import resource="@MbEarthCeoBundle/Resources/config/routing/tax.xml" />
+
+    <route id="_welcome" path="/">
+        <default key="_controller">MbEarthCeoBundle:Tax:index</default>
+    </route>
 </routes>

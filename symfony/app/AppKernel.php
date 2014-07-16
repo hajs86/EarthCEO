@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             //3rd party
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
             new Oneup\UploaderBundle\OneupUploaderBundle(),
+            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

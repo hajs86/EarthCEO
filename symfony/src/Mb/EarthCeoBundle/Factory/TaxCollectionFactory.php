@@ -66,7 +66,9 @@ class TaxCollectionFactory
         $tax = [];
 
         foreach ($this->getValues($row) as $key => $value) {
-            $tax[$this->fields[$key]] = $value;
+            if (array_key_exists($key, $this->fields)) {
+                $tax[$this->fields[$key]] = $value;
+            }
         }
 
         return Tax::createFromArray($tax);

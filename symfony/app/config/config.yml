@@ -1,6 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
+    - { resource: doctrine_extensions.yml }
 
 framework:
     #esi:             ~
@@ -72,3 +73,9 @@ oneup_uploader:
     mappings:
         storage:
             frontend: blueimp
+
+stof_doctrine_extensions:
+    default_locale: en_US
+    orm:
+        default:
+            sortable: true
