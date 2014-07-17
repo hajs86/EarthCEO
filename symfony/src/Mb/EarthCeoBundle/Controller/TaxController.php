@@ -2,6 +2,8 @@
 
 namespace Mb\EarthCeoBundle\Controller;
 
+use Exception;
+use InvalidArgumentException;
 use Mb\EarthCeoBundle\Entity\Sheet;
 use Mb\EarthCeoBundle\Entity\TaxCollection;
 use Mb\EarthCeoBundle\Entity\TaxRepository;
@@ -16,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Mb\EarthCeoBundle\Entity\Tax;
 use Mb\EarthCeoBundle\Form\TaxType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
 
 /**
@@ -44,13 +47,18 @@ class TaxController extends Controller
         );
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
     public function fileProcessingAction(Request $request)
     {
         $pathToFile = implode(
             '',
             [
                 $request->server->get('DOCUMENT_ROOT'),
-                '/uploads/storage/',
+                $this->container->getParameter('upload_dir'),
                 $request->query->get('filename')
             ]
         );
@@ -58,7 +66,15 @@ class TaxController extends Controller
         /** @var PHPExcel $object */
         $sheet = $this->getObjectFromFile($pathToFile);
 
-        $taxCollectionFactory = new TaxCollectionFactory($sheet);
+        try {
+            $taxCollectionFactory = new TaxCollectionFactory($sheet);
+        } catch (Exception $e) {
+
+            return new Response(
+                json_encode(['result' => 'fail', 'message' => 'Uploaded data does not meet structure requirements']),
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
         $this->getTaxCollectionValidator()->validateAndUpdateCollection($taxCollectionFactory->getTaxCollection());
 
@@ -94,7 +110,6 @@ class TaxController extends Controller
                 return $this->getExcelService()->createPhpExcelObject($pathToFile);
         }
     }
-
 
     /**
      * @return \Liuggio\ExcelBundle\Factory

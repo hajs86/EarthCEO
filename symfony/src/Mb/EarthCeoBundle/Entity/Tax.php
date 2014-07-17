@@ -324,8 +324,11 @@ class Tax extends Sheet
      */
     public function setPopulation($population)
     {
+        if ($this->containsOnlyLetters($population)) {
+            return null;
+        }
         $population = intval(utf8_decode(str_replace(' ', '', $population)));
-        $this->population = is_numeric($population) ? $population : null;
+        $this->population = $population;
 
         return $this;
     }
@@ -337,7 +340,7 @@ class Tax extends Sheet
      */
     public function getPopulation()
     {
-        return $this->population;
+        return $this->toNumberFormat($this->population);
     }
 
     /**
@@ -361,7 +364,7 @@ class Tax extends Sheet
      */
     public function getMayorName()
     {
-        return $this->mayorName;
+        return $this->wrongFormatOrValue($this->mayorName);
     }
 
     /**
@@ -385,7 +388,7 @@ class Tax extends Sheet
      */
     public function getMayorEmail()
     {
-        return $this->mayorEmail == null? 'Niepoprawny format': $this->mayorEmail;
+        return $this->wrongFormatOrValue($this->mayorEmail);
     }
 
     /**
@@ -410,7 +413,6 @@ class Tax extends Sheet
      */
     public function getUpdateDate()
     {
-
         return $this->updateDate;
     }
 
@@ -419,7 +421,22 @@ class Tax extends Sheet
      */
     public function getIncomeForPerson()
     {
-        return array_sum([$this->taxesCIT, $this->taxesOther, $this->taxesPIT, $this->taxesVAT]) / $this->population;
+        if ($this->population > 0) {
+
+            return $this->toNumberFormat(
+                        array_sum(
+                            [
+                                $this->taxesCIT,
+                                $this->taxesOther,
+                                $this->taxesPIT,
+                                $this->taxesVAT
+                            ]
+                        ) / $this->population
+            );
+        } else {
+
+            return 'N/A';
+        }
     }
 
     /**
@@ -429,12 +446,12 @@ class Tax extends Sheet
      */
     private function toNumberFormat($value)
     {
-        if (is_numeric($value)) {
+        if ($value !== null) {
 
             return number_format($value, 2, ',', ' ');
         }
 
-        return null;
+        return 'Wrong format';
     }
 
     /**
@@ -444,6 +461,10 @@ class Tax extends Sheet
      */
     private function toFloat($num)
     {
+        if ($this->containsOnlyLetters($num)) {
+            return null;
+        }
+
         $dotPos = strrpos($num, '.');
         $commaPos = strrpos($num, ',');
         $sep = (($dotPos > $commaPos) && $dotPos) ? $dotPos :
@@ -456,7 +477,27 @@ class Tax extends Sheet
         return floatval(
             preg_replace("/[^0-9]/", "", substr($num, 0, $sep)) . '.' .
             preg_replace("/[^0-9]/", "", substr($num, $sep + 1, strlen($num)))
-        );
+        ) * 1000;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return string
+     */
+    private function wrongFormatOrValue($value)
+    {
+        return !empty($value) ? $value : 'Wrong format';
+    }
+
+    /**
+     * @param $value
+     *
+     * @return bool
+     */
+    private function containsOnlyLetters($value)
+    {
+        return !preg_match('/[^A-Za-z]/', $value);
     }
 
 

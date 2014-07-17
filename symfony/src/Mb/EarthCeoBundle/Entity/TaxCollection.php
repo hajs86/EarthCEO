@@ -10,7 +10,6 @@ namespace Mb\EarthCeoBundle\Entity;
 
 use ArrayAccess;
 use InvalidArgumentException;
-use Iterator;
 use IteratorAggregate;
 
 class TaxCollection implements IteratorAggregate, ArrayAccess
@@ -59,21 +58,13 @@ class TaxCollection implements IteratorAggregate, ArrayAccess
         if ($value instanceof Tax) {
             $this->data[$offset] = $value;
         } else {
-            throw new InvalidArgumentException('Value must be instance of %s, %s given', Tax::class, gettype($value));
+            throw new InvalidArgumentException(sprintf('Value must be instance of %s, %s given', Tax::class, gettype($value)));
         }
 
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to unset
-     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     *
-     * @return void
+     * @param mixed $offset
      */
     public function offsetUnset($offset)
     {

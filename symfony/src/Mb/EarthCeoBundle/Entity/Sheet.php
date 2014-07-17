@@ -10,6 +10,7 @@ namespace Mb\EarthCeoBundle\Entity;
 
 
 use InvalidArgumentException;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class Sheet
@@ -39,6 +40,7 @@ class Sheet
     {
         foreach ($values as $key => $value) {
             $this->cleanValue($value);
+
             static::getPropertyAccessor()->setValue($this, $key, $value);
         }
 

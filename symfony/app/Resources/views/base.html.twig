@@ -2,15 +2,16 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
-    <title>{% block title %}Welcome!{% endblock %}</title>
+    <title>{% block title %}EarthCEO{% endblock %}</title>
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('css/jquery.fileupload.css') }}"/>
         <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('css/bootstrap-theme.min.css') }}"/>
         <style>
-            body{
+            body {
                 padding-top: 100px;
             }
+
         </style>
     {% endblock %}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
@@ -32,73 +33,77 @@
         $(function () {
             'use strict';
             var url = '{{ oneup_uploader_endpoint('storage') }}',
-                uploadButton = $('<button/>')
-                        .addClass('btn btn-primary')
-                        .prop('disabled', true)
-                        .text('Processing...')
-                        .on('click', function () {
-                            var $this = $(this),
-                                    data = $this.data();
-                            $this.off('click')
-                                    .text('Abort')
-                                    .on('click', function () {
-                                        $this.remove();
-                                        data.abort();
-                                    });
-                            data.submit().always(function () {
-                                $this.remove();
-                            });
-                        });
+                    alertPlaceholder = $('#alert-placeholder'),
+                    successPlaceholder = $('#success-placeholder'),
+                    placeholder = successPlaceholder,
+                    resetProgressAndFiles = function() {
+                        $('#files').html('');
+                        $('#progress').children().css('width','0%');
+                    },
+                    reload = function () {
+                        document.location.reload()
+                    },
+                    showInfo = function (type, message, callback) {
+                        switch (type) {
+                            case 'fail':
+                                placeholder = alertPlaceholder;
+                                break;
+                            case 'success':
+                                placeholder = successPlaceholder;
+                                break;
+                        }
+                        placeholder.show().html(message);
+                        setTimeout(function () {
+                            placeholder.fadeOut('fast');
+                            callback();
+                        }, 4000);
+                    };
+
             $('#fileupload').fileupload({
                 url: url,
                 dataType: 'json',
-                autoUpload: false,
+                autoUpload: true,
                 acceptFileTypes: /(\.|\/)(csv|xls)$/i,
                 maxFileSize: 5000000 // 5 MB
-            }).on('fileuploadadd', function (e, data) {
+            }).on('fileuploadadd',function (e, data) {
                 data.context = $('<div/>').appendTo('#files');
                 $.each(data.files, function (index, file) {
                     var node = $('<p/>').append($('<span/>').text(file.name));
-                    if (!index) {
-                        node.append('<br>').append(uploadButton.clone(true).data(data));
-                    }
                     node.appendTo(data.context);
                 });
-            }).on('fileuploadprocessalways', function (e, data) {
+            }).on('fileuploadprocessalways',function (e, data) {
                 var index = data.index,
                         file = data.files[index],
                         node = $(data.context.children()[index]);
 
-                if (file.preview) {
-                    node.prepend('<br>').prepend(file.preview);
-                }
-
                 if (file.error) {
-                    node.append('<br>').append($('<span class="text-danger"/>').text(file.error));
+                    showInfo('fail', file.error, resetProgressAndFiles);
                 }
 
-                if (index + 1 === data.files.length) {
-                    data.context.find('button').text('Upload').prop('disabled', !!data.files.error);
-                }
-
-            }).on('fileuploadprogressall', function (e, data) {
+            }).on('fileuploadprogressall',function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
                 $('#progress .progress-bar').css('width', progress + '%');
-            }).on('fileuploaddone', function (e, data) {
+            }).on('fileuploaddone',function (e, data) {
                 var file = data.result.files;
-                        $.ajax({
-                            type: 'GET',
-                            url: '{{ path('tax_processing') }}',
-                            data: { filename: file.name}
-                        })
-                        .done(function( msg ) {
-                            console.log( msg );
-                        });
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'json',
+                    url: '{{ path('tax_processing') }}',
+                    data: { filename: file.name}
+                })
+                .done(function (response) {
+                    if (response.result === 'success') {
+                        showInfo('success', 'Success! Your file is successfuly uploaded and processed', reload);
+                    }
+                })
+                .error(function (xhr) {
+                    var result = jQuery.parseJSON(xhr.responseText);
+                    showInfo('fail', 'Failure :( ' + result.message, resetProgressAndFiles);
+                });
 
-            }).on('fileuploadfail', function (e, data) {
+            }).on('fileuploadfail',function (e, data) {
                 $.each(data.files, function (index, file) {
-                    var error = $('<span class="text-danger"/>').text('File upload failed.');
-                    $(data.context.children()[index]).append('<br>').append(error);
+                    showInfo('fail', 'File upload failed', resetProgressAndFiles)
                 });
             }).prop('disabled', !$.support.fileInput)
                     .parent().addClass($.support.fileInput ? undefined : 'disabled');

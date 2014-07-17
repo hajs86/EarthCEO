@@ -96,7 +96,7 @@ class TaxCollectionFactory
     }
 
     /**
-     * @return void
+     * @return bool
      */
     private function createCollectionFromSheet()
     {
@@ -108,5 +108,4 @@ class TaxCollectionFactory
             $this->taxCollection->offsetSet($row->getRowIndex(), $this->createTaxFromRow($row));
         }
     }
-
 } 

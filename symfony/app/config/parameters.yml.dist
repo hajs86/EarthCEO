@@ -21,3 +21,4 @@ parameters:
     csv_delimiter: ';'
     csv_enclosure: '"'
     csv_line_ending: "\r\n"
+    upload_dir: '/uploads/storage/'
